@@ -1,7 +1,7 @@
 package com.example.ui
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +21,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.painterResource
 import com.example.data.*
 import com.example.ui.theme.*
 import java.text.SimpleDateFormat
@@ -69,6 +71,9 @@ fun MemoryAppContent(viewModel: MemoryViewModel) {
         ) {
             AnimatedContent(
                 targetState = activeTab,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(220)) togetherWith fadeOut(animationSpec = tween(180))
+                },
                 label = "ScreenSwitch"
             ) { targetTab ->
                 when (targetTab) {
@@ -106,43 +111,61 @@ fun MemoryAppContent(viewModel: MemoryViewModel) {
 fun RecommendedDiscoveryBubble(memories: List<MemoryItem>) {
     val suggestion = remember(memories) {
         if (memories.size >= 2) {
-            "Synthesize context: Connect \"${memories[0].title.take(18)}\" with your recent study on \"${memories[1].title.take(18)}\"?"
+            "Connect \"${memories[0].title.take(22)}\" with \"${memories[1].title.take(22)}\" to unlock nested synaptic pathways."
         } else {
-            "Ingest and register more concept notes to build an interactive associative knowledge network."
+            "Ingest more files or quotes to spin the neural web of your second brain."
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp)
-            .background(DeepIndigo.copy(alpha = 0.08f), RoundedCornerShape(20.dp))
-            .border(1.dp, NebulaViolet.copy(alpha = 0.15f), RoundedCornerShape(20.dp))
+            .padding(vertical = 4.dp)
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(DeepIndigo.copy(alpha = 0.15f), ElevatedSlate.copy(alpha = 0.4f))
+                ),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .border(1.dp, NebulaViolet.copy(alpha = 0.2f), RoundedCornerShape(20.dp))
             .padding(14.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Pulse anim or indicator
+            val infiniteTransition = rememberInfiniteTransition(label = "RadarPulse")
+            val pulseAlpha by infiniteTransition.animateFloat(
+                initialValue = 0.3f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(1200, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "PulseAlpha"
+            )
+
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .background(NebulaViolet.copy(alpha = 0.15f), RoundedCornerShape(12.dp)),
+                    .background(NebulaViolet.copy(alpha = 0.12f), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Box(
                     modifier = Modifier
                         .size(10.dp)
+                        .graphicsLayer(alpha = pulseAlpha)
                         .background(TealGlow, CircleShape)
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Recommended Discovery",
+                    text = "NEURAL EXPLORATION PROMPT",
                     color = NebulaViolet,
-                    fontSize = 11.sp,
+                    fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp
+                    letterSpacing = 1.sp
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -153,6 +176,12 @@ fun RecommendedDiscoveryBubble(memories: List<MemoryItem>) {
                     fontWeight = FontWeight.Normal
                 )
             }
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = null,
+                tint = SlateGray,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }
@@ -165,203 +194,442 @@ fun DashboardScreen(viewModel: MemoryViewModel) {
     val query by viewModel.userQuery.collectAsStateWithLifecycle()
     val activeFilter by viewModel.filterSourceType.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Immersive Brand Header with Glowing Scanner Orb
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Hub,
-                    contentDescription = null,
-                    tint = NebulaViolet,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(
-                        text = "MemoryLens",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = OffWhite,
-                        letterSpacing = (-0.5).sp
-                    )
-                    Text(
-                        text = "PERSONAL KNOWLEDGE GRAPH",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = SlateGray,
-                        letterSpacing = 1.5.sp
-                    )
-                }
-            }
-            // Glowing Network Orb
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(NebulaViolet.copy(alpha = 0.15f), CircleShape)
-                    .border(1.dp, NebulaViolet.copy(alpha = 0.3f), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .background(NebulaViolet, CircleShape)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Stats Overlay bar
-        Row(
+    if (allMemories.isEmpty()) {
+        EmptyWorkspaceView(onSeed = { viewModel.seedSampleData() })
+    } else {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(14.dp),
             modifier = Modifier
-                .fillMaxWidth()
-                .background(DeepSlate, RoundedCornerShape(24.dp))
-                .border(1.dp, GhostWhite, RoundedCornerShape(24.dp))
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .testTag("memories_list")
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "SAVED METADATA", fontSize = 9.sp, color = SlateGray, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
-                Text(text = "${allMemories.size}", fontSize = 20.sp, color = NebulaViolet, fontWeight = FontWeight.ExtraBold)
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "CONCEPT NODES", fontSize = 9.sp, color = SlateGray, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
-                Text(text = "${conceptNodes.size}", fontSize = 20.sp, color = TealGlow, fontWeight = FontWeight.ExtraBold)
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "COGNITIVE INDEX", fontSize = 9.sp, color = SlateGray, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
-                val pct = if (allMemories.isEmpty()) 0 else (allMemories.size * 18 + 12) % 100
-                Text(text = "$pct%", fontSize = 20.sp, color = CoralGlow, fontWeight = FontWeight.ExtraBold)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Search Block with Glowing ambient background gradient
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .offset(y = 1.dp)
-                    .background(
-                        Brush.horizontalGradient(listOf(NebulaViolet, DeepIndigo)),
-                        RoundedCornerShape(18.dp)
-                    )
-                    .graphicsLayer(alpha = 0.15f)
-            )
-            OutlinedTextField(
-                value = query,
-                onValueChange = { viewModel.userQuery.value = it },
-                placeholder = { Text("Search your mind space...", color = SlateGray, fontSize = 14.sp) },
-                leadingIcon = { Icon(Icons.Default.FilterList, contentDescription = null, tint = NebulaViolet) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("search_bar_input"),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = OffWhite,
-                    unfocusedTextColor = OffWhite,
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = DeepSlate.copy(alpha = 0.9f),
-                    unfocusedContainerColor = DeepSlate.copy(alpha = 0.9f)
-                ),
-                shape = RoundedCornerShape(18.dp),
-                singleLine = true
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Recommended Discovery Insight Bubble from Immersive UI Spec
-        RecommendedDiscoveryBubble(memories = memories)
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // Capsules slider for sources
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val sources = listOf("all", "note", "book", "url", "image", "audio")
-            sources.forEach { src ->
-                val isSelected = activeFilter == src
-                Box(
+            // Item 1: Brand Dynamic Header
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .background(
-                            if (isSelected) NebulaViolet else DeepSlate,
-                            RoundedCornerShape(20.dp)
-                        )
-                        .border(1.dp, if (isSelected) NebulaViolet else GhostWhite, RoundedCornerShape(20.dp))
-                        .clickable { viewModel.setSourceFilter(src) }
-                        .padding(horizontal = 14.dp, vertical = 6.dp)
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
                 ) {
-                    Text(
-                        text = src.uppercase(),
-                        color = if (isSelected) Color.Black else OffWhite,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .background(
+                                    brush = Brush.radialGradient(colors = listOf(NebulaViolet.copy(alpha = 0.25f), Color.Transparent)),
+                                    shape = CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = com.example.R.drawable.ic_logo),
+                                contentDescription = "MemoryLens Logo",
+                                tint = Color.Unspecified,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "MemoryLens",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = OffWhite,
+                                letterSpacing = (-0.5).sp
+                            )
+                            Text(
+                                text = "YOUR SECOND COGNITIVE BRAIN",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = SlateGray,
+                                letterSpacing = 1.5.sp
+                            )
+                        }
+                    }
+
+                    // Sync indicators with glow color mix
+                    Box(
+                        modifier = Modifier
+                            .background(DeepSlate, RoundedCornerShape(12.dp))
+                            .border(1.dp, GhostWhite, RoundedCornerShape(12.dp))
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Box(modifier = Modifier.size(6.dp).background(TealGlow, CircleShape))
+                            Text(text = "LIVE SYNCED", color = OffWhite, fontSize = 9.sp, fontWeight = FontWeight.SemiBold)
+                        }
+                    }
+                }
+            }
+
+            // Item 2: Spectacular Aura Dashboard Card
+            item {
+                MindPalaceAuraWidget(allMemories.size, conceptNodes.size)
+            }
+
+            // Item 3: Daily High-End Multi-colored Insight Card
+            item {
+                ApertureRefractiveInsightPanel(allMemories)
+            }
+
+            // Item 4: Glowing Rainbow Action Search Dock
+            item {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .offset(y = 1.dp)
+                            .background(
+                                Brush.horizontalGradient(listOf(NebulaViolet, CoralGlow)),
+                                RoundedCornerShape(18.dp)
+                            )
+                            .graphicsLayer(alpha = 0.15f)
+                    )
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { viewModel.userQuery.value = it },
+                        placeholder = { Text("Query your mind palace...", color = SlateGray, fontSize = 14.sp) },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Query Lens", tint = NebulaViolet, modifier = Modifier.size(20.dp)) },
+                        trailingIcon = {
+                            if (query.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.userQuery.value = "" }) {
+                                    Icon(Icons.Default.Clear, contentDescription = "Clear", tint = SlateGray, modifier = Modifier.size(16.dp))
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("search_bar_input"),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = OffWhite,
+                            unfocusedTextColor = OffWhite,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedContainerColor = DeepSlate.copy(alpha = 0.95f),
+                            unfocusedContainerColor = DeepSlate.copy(alpha = 0.95f)
+                        ),
+                        shape = RoundedCornerShape(18.dp),
+                        singleLine = true
                     )
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            // Item 5: Pulse-glowing Recommended Connection bubble
+            item {
+                RecommendedDiscoveryBubble(memories = memories)
+            }
 
-        // Feed block
-        if (allMemories.isEmpty()) {
-            EmptyWorkspaceView(onSeed = { viewModel.seedSampleData() })
-        } else if (memories.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
+            // Item 6: Source choice capsules list colored beautifully
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    val sources = listOf("all", "note", "book", "url", "audio")
+                    sources.forEach { src ->
+                        val isSelected = activeFilter == src
+                        val bgBrush = if (isSelected) {
+                            val gradientColors = when (src) {
+                                "book" -> listOf(DeepIndigo, NebulaViolet)
+                                "url" -> listOf(TealGlow, DeepIndigo)
+                                "audio" -> listOf(CoralGlow, DeepIndigo)
+                                "note" -> listOf(NebulaViolet, DeepIndigo)
+                                else -> listOf(NebulaViolet, DeepIndigo)
+                            }
+                            Brush.horizontalGradient(gradientColors)
+                        } else {
+                            Brush.linearGradient(listOf(DeepSlate, DeepSlate))
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(bgBrush, RoundedCornerShape(20.dp))
+                                .border(1.dp, if (isSelected) Color.White.copy(alpha = 0.6f) else GhostWhite, RoundedCornerShape(20.dp))
+                                .clickable { viewModel.setSourceFilter(src) }
+                                .padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            val icon = when (src) {
+                                "book" -> Icons.Default.MenuBook
+                                "url" -> Icons.Default.Link
+                                "audio" -> Icons.Default.Mic
+                                "note" -> Icons.Default.Description
+                                else -> Icons.Default.GridView
+                            }
+                            val accentColor = when (src) {
+                                "book" -> DeepIndigo
+                                "url" -> TealGlow
+                                "audio" -> CoralGlow
+                                "note" -> NebulaViolet
+                                else -> NebulaViolet
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    icon, 
+                                    contentDescription = src, 
+                                    tint = if (isSelected) Color.White else accentColor, 
+                                    modifier = Modifier.size(11.dp)
+                                )
+                                Text(
+                                    text = src.uppercase(),
+                                    color = if (isSelected) Color.White else OffWhite,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Item 7: Memory Streams feed list header
+            item {
                 Text(
-                    text = "No matching concept highlights found.\nTry broadening your search query.",
+                    text = "MEMORIES STREAM FEED // SHRED RECALL",
                     color = SlateGray,
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 1.sp,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("memories_list")
-            ) {
+
+            // Items (Memories stream search listings)
+            if (memories.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.SearchOff, contentDescription = null, tint = CoralGlow, modifier = Modifier.size(48.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "No matching concept highlights found.\nTry broadening your search query.",
+                                color = SlateGray,
+                                textAlign = TextAlign.Center,
+                                fontSize = 13.sp,
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                }
+            } else {
                 items(memories) { memo ->
                     MemoryItemRowCard(item = memo, onClick = { viewModel.selectItem(memo) })
                 }
-                item { Spacer(modifier = Modifier.height(80.dp)) }
+            }
+
+            // Safe spacing for bottom bar overlay
+            item {
+                Spacer(modifier = Modifier.height(100.dp))
             }
         }
     }
 }
 
 @Composable
+fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(DeepSlate, ElevatedSlate)
+                ),
+                shape = RoundedCornerShape(24.dp)
+            )
+            .border(1.dp, GhostWhite, RoundedCornerShape(24.dp))
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1.3f)) {
+                Text(
+                    text = "MIND INTEGRITY & AURA",
+                    color = NebulaViolet,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.2.sp
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Cosmic Mindspace",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = OffWhite
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(CoralGlow.copy(alpha = 0.12f), RoundedCornerShape(6.dp))
+                            .border(1.dp, CoralGlow.copy(alpha = 0.2f), RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(text = "7 Days Streak", color = CoralGlow, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .background(DeepIndigo.copy(alpha = 0.15f), RoundedCornerShape(6.dp))
+                            .border(1.dp, DeepIndigo.copy(alpha = 0.25f), RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(text = "Compounding Focus", color = DeepIndigo, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            // Radial progress sphere represents learning density
+            Box(
+                modifier = Modifier
+                    .size(68.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(NebulaViolet.copy(alpha = 0.15f), Color.Transparent)
+                        ),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(modifier = Modifier.size(56.dp)) {
+                    val centerPt = Offset(size.width / 2, size.height / 2)
+                    drawCircle(
+                        color = GhostWhite,
+                        radius = size.width / 2,
+                        center = centerPt,
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 4f)
+                    )
+                    drawArc(
+                        color = NebulaViolet,
+                        startAngle = -90f,
+                        sweepAngle = 280f, // representing 78% depth score
+                        useCenter = false,
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 6f)
+                    )
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "94%", color = OffWhite, fontSize = 14.sp, fontWeight = FontWeight.ExtraBold)
+                    Text(text = "DEP", color = SlateGray, fontSize = 7.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
+        Divider(color = GhostWhite, thickness = 1.dp)
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(text = "SAVED MEMORIES", fontSize = 8.sp, color = SlateGray, fontWeight = FontWeight.Bold)
+                Text(text = "$memoriesCount Nodes", fontSize = 14.sp, color = NebulaViolet, fontWeight = FontWeight.ExtraBold)
+            }
+            Column {
+                Text(text = "CONCEPT MATRIX", fontSize = 8.sp, color = SlateGray, fontWeight = FontWeight.Bold)
+                Text(text = "$nodesCount Links", fontSize = 14.sp, color = TealGlow, fontWeight = FontWeight.ExtraBold)
+            }
+            Column {
+                Text(text = "COGNITIVE SPEED", fontSize = 8.sp, color = SlateGray, fontWeight = FontWeight.Bold)
+                Text(text = "37x Speed", fontSize = 14.sp, color = CoralGlow, fontWeight = FontWeight.ExtraBold)
+            }
+        }
+    }
+}
+
+@Composable
+fun ApertureRefractiveInsightPanel(memories: List<MemoryItem>) {
+    // Elegant refract highlight
+    val defaultHighlight = "Compounding happens automatically. Daily improvements of 1% yield stellar, lifelong cognitive assets."
+    val displayInsight = remember(memories) {
+        if (memories.isNotEmpty()) {
+            "Synthesized from \"${memories[0].title}\": Keep active focus limits inside 90-minute blocks to avoid neural fatigue."
+        } else {
+            defaultHighlight
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(DeepSlate, ElevatedSlate)
+                ),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .border(
+                1.dp, 
+                Brush.horizontalGradient(listOf(NebulaViolet, CoralGlow, TealGlow)), 
+                RoundedCornerShape(20.dp)
+            )
+            .padding(14.dp)
+    ) {
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = CoralGlow, modifier = Modifier.size(14.dp))
+                Text(
+                    text = "DAILY RECONSTRUCTIVE INSIGHT",
+                    fontSize = 8.sp,
+                    color = CoralGlow,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.2.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = displayInsight,
+                color = OffWhite,
+                fontSize = 12.sp,
+                lineHeight = 17.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Composable
 fun MemoryItemRowCard(item: MemoryItem, onClick: () -> Unit) {
+    val sourceColor = remember(item.sourceType) {
+        when (item.sourceType.lowercase()) {
+            "book" -> DeepIndigo
+            "url" -> TealGlow
+            "audio" -> CoralGlow
+            else -> NebulaViolet
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .testTag("memory_card_${item.id}"),
         colors = CardDefaults.cardColors(containerColor = DeepSlate),
-        shape = RoundedCornerShape(14.dp),
-        border = borderStrokeLight()
+        shape = RoundedCornerShape(20.dp),
+        border = borderStrokeLight(sourceColor.copy(alpha = 0.25f))
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -374,25 +642,25 @@ fun MemoryItemRowCard(item: MemoryItem, onClick: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .background(ElevatedSlate, CircleShape)
-                            .padding(8.dp)
+                            .background(sourceColor.copy(alpha = 0.12f), RoundedCornerShape(8.dp))
+                            .border(1.dp, sourceColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                            .padding(6.dp)
                     ) {
                         val icon = when (item.sourceType.lowercase()) {
                             "book" -> Icons.Default.MenuBook
                             "url" -> Icons.Default.Link
-                            "image" -> Icons.Default.Image
                             "audio" -> Icons.Default.Mic
                             else -> Icons.Default.NoteAlt
                         }
-                        Icon(icon, contentDescription = null, tint = NebulaViolet, modifier = Modifier.size(16.dp))
+                        Icon(icon, contentDescription = null, tint = sourceColor, modifier = Modifier.size(14.dp))
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = item.sourceType.uppercase(),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 10.sp,
-                        color = TealGlow,
-                        letterSpacing = 1.sp
+                        fontSize = 9.sp,
+                        color = sourceColor,
+                        letterSpacing = 0.8.sp
                     )
                 }
                 
@@ -404,7 +672,8 @@ fun MemoryItemRowCard(item: MemoryItem, onClick: () -> Unit) {
                 Text(
                     text = dateStr,
                     fontSize = 10.sp,
-                    color = SlateGray
+                    color = SlateGray,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
@@ -423,28 +692,18 @@ fun MemoryItemRowCard(item: MemoryItem, onClick: () -> Unit) {
 
             Text(
                 text = item.summary,
-                fontSize = 13.sp,
+                fontSize = 12.sp,
                 color = SlateGray,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                lineHeight = 18.sp
+                lineHeight = 17.sp
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Display some tags directly on the card
+            // Display cognitive tags directly
             val tags = remember(item.cognitiveTagsJson) {
-                try {
-                    val cleaned = item.cognitiveTagsJson.trim()
-                    if (cleaned.startsWith("[") && cleaned.endsWith("]")) {
-                        cleaned.substring(1, cleaned.length - 1)
-                            .split(",")
-                            .map { it.trim().removeSurrounding("\"") }
-                            .filter { it.isNotBlank() }
-                    } else emptyList()
-                } catch (e: Exception) {
-                    emptyList()
-                }
+                parseJsonStringList(item.cognitiveTagsJson)
             }
 
             if (tags.isNotEmpty()) {
@@ -458,7 +717,7 @@ fun MemoryItemRowCard(item: MemoryItem, onClick: () -> Unit) {
                                 .background(ElevatedSlate, RoundedCornerShape(6.dp))
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
-                            Text(text = "#$tag", color = SlateGray, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+                            Text(text = "#$tag", color = SlateGray, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -477,25 +736,36 @@ fun EmptyWorkspaceView(onSeed: () -> Unit) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth(0.9f)
         ) {
-            Icon(
-                imageVector = Icons.Default.Psychology,
-                contentDescription = null,
-                tint = SlateGray,
-                modifier = Modifier.size(72.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            Box(
+                modifier = Modifier
+                    .size(84.dp)
+                    .background(
+                        brush = Brush.radialGradient(colors = listOf(NebulaViolet.copy(alpha = 0.15f), Color.Transparent)),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = com.example.R.drawable.ic_logo),
+                    contentDescription = "MemoryLens Logo",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(64.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Your Second Brain Is Pure",
-                fontSize = 20.sp,
+                text = "Your Mind Palace Awaits",
+                fontSize = 22.sp,
                 color = OffWhite,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Begin capturing notes, web connections, or book concepts to populate your visual interactive Memory Map instantly.",
+                text = "Begin capturing video highlights, text logs, podcast insights, or article notes to build your cognitive neural network dynamically.",
                 fontSize = 13.sp,
                 color = SlateGray,
                 textAlign = TextAlign.Center,
@@ -506,12 +776,19 @@ fun EmptyWorkspaceView(onSeed: () -> Unit) {
             Button(
                 onClick = onSeed,
                 colors = ButtonDefaults.buttonColors(containerColor = ElevatedSlate),
-                border = borderStrokeLight(Color(0xFF2E2E3E)),
-                shape = RoundedCornerShape(12.dp)
+                border = borderStrokeLight(NebulaViolet.copy(alpha = 0.3f)),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NebulaViolet)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Seed Intelligent Sample Memories", color = OffWhite)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = NebulaViolet)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Initialize Second Brain (Seed Data)", color = OffWhite, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
@@ -530,32 +807,32 @@ fun IngestMemoryDialog(
     Dialog(onDismissRequest = { if (!isAnalyzing) onDismiss() }) {
         Card(
             colors = CardDefaults.cardColors(containerColor = DeepSlate),
-            shape = RoundedCornerShape(18.dp),
+            shape = RoundedCornerShape(24.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp, GhostWhite, RoundedCornerShape(18.dp))
+                .border(1.dp, GhostWhite, RoundedCornerShape(24.dp))
         ) {
             Column(
                 modifier = Modifier.padding(20.dp)
             ) {
                 Text(
-                    text = "Augment Mind Cache",
+                    text = "Enrich Brain Cache",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = OffWhite
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Supply links, logs, screenshots, transcripts, or notes. Gemini will extract relationships dynamically.",
+                    text = "Supply web links, books passages, lectures blocks, or speech transcripts. Gemini AI will analyze key nodes.",
                     fontSize = 11.sp,
                     color = SlateGray,
-                    lineHeight = 14.sp
+                    lineHeight = 15.sp
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Source Type Capsule Choice
-                Text(text = "SOURCE FORMAT TYPE", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = SlateGray)
+                Text(text = "SOURCE FORMAT TYPE", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = SlateGray, letterSpacing = 0.5.sp)
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -569,9 +846,9 @@ fun IngestMemoryDialog(
                                 .weight(1f)
                                 .background(
                                     if (active) DeepIndigo else ElevatedSlate,
-                                    RoundedCornerShape(8.dp)
+                                    RoundedCornerShape(10.dp)
                                 )
-                                .border(1.dp, if (active) NebulaViolet else Color.Transparent, RoundedCornerShape(8.dp))
+                                .border(1.dp, if (active) NebulaViolet else Color.Transparent, RoundedCornerShape(10.dp))
                                 .clickable { viewModel.addMemorySourceType.value = opt }
                                 .padding(vertical = 8.dp),
                             contentAlignment = Alignment.Center
@@ -588,14 +865,14 @@ fun IngestMemoryDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Raw input
+                // Raw input text field
                 OutlinedTextField(
                     value = text,
                     onValueChange = { viewModel.addMemoryText.value = it },
                     placeholder = { Text("What did you learn? Paste raw texts, lectures transcripts, quotes or logs...", color = SlateGray, fontSize = 13.sp) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .height(140.dp)
                         .testTag("ingest_text_input"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = OffWhite,
@@ -605,14 +882,15 @@ fun IngestMemoryDialog(
                         focusedContainerColor = CosmicVoid,
                         unfocusedContainerColor = CosmicVoid
                     ),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = onDismiss, enabled = !isAnalyzing) {
                         Text(text = "CANCEL", color = SlateGray, fontWeight = FontWeight.Bold)
@@ -621,14 +899,14 @@ fun IngestMemoryDialog(
                     Button(
                         onClick = { viewModel.ingestMemory() },
                         colors = ButtonDefaults.buttonColors(containerColor = NebulaViolet),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         enabled = !isAnalyzing && text.trim().isNotEmpty(),
                         modifier = Modifier.testTag("submit_ingest_button")
                     ) {
                         if (isAnalyzing) {
                             CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Color.Black, strokeWidth = 2.dp)
                         } else {
-                            Text(text = "ENRICH & SAVE", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            Text(text = "ENRICH & MAP", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                         }
                     }
                 }
@@ -646,10 +924,10 @@ fun MemoryDetailPanel(
     Dialog(onDismissRequest = onDismiss) {
         Card(
             colors = CardDefaults.cardColors(containerColor = DeepSlate),
-            shape = RoundedCornerShape(18.dp),
+            shape = RoundedCornerShape(24.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp, GhostWhite, RoundedCornerShape(18.dp))
+                .border(1.dp, GhostWhite, RoundedCornerShape(24.dp))
                 .padding(4.dp)
         ) {
             LazyColumn(
@@ -666,10 +944,10 @@ fun MemoryDetailPanel(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Psychology, contentDescription = null, tint = NebulaViolet)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Cognitive Outline", fontWeight = FontWeight.Bold, color = OffWhite, fontSize = 18.sp)
+                            Text(text = "Synthesized Concept Map", fontWeight = FontWeight.Bold, color = OffWhite, fontSize = 16.sp)
                         }
                         IconButton(onClick = onDismiss) {
-                            Icon(Icons.Default.Close, contentDescription = null, tint = SlateGray)
+                            Icon(Icons.Default.Close, contentDescription = "Close Outline", tint = SlateGray)
                         }
                     }
 
@@ -692,25 +970,25 @@ fun MemoryDetailPanel(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Raw input summary
-                    Text(text = "SEMANTIC SUMMARY", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold)
+                    Text(text = "SEMANTIC EXTRACT", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = item.summary,
                         color = OffWhite,
                         fontSize = 14.sp,
-                        lineHeight = 18.sp
+                        lineHeight = 19.sp
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
                     // Raw Content
-                    Text(text = "RAW MEMORY INPUT", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold)
+                    Text(text = "RAW MIND DATA SOURCE", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
                     Spacer(modifier = Modifier.height(6.dp))
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(CosmicVoid, RoundedCornerShape(10.dp))
-                            .border(1.dp, GhostWhite, RoundedCornerShape(10.dp))
+                            .background(CosmicVoid, RoundedCornerShape(12.dp))
+                            .border(1.dp, GhostWhite, RoundedCornerShape(12.dp))
                             .padding(12.dp)
                     ) {
                         Text(
@@ -728,7 +1006,7 @@ fun MemoryDetailPanel(
                 val actions = parseJsonStringList(item.actionItemsJson)
                 if (actions.isNotEmpty()) {
                     item {
-                        Text(text = "PROACTIVE ACTION ITEMS", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold)
+                        Text(text = "PROACTIVE COGNITIVE TODO", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     items(actions) { act ->
@@ -748,7 +1026,7 @@ fun MemoryDetailPanel(
                 val flashcards = parseJsonFlashcardList(item.flashcardsJson)
                 if (flashcards.isNotEmpty()) {
                     item {
-                        Text(text = "STUDY MEMORY LINKS", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold)
+                        Text(text = "ACTIVE STUDY MEMORY DECK", fontSize = 10.sp, color = SlateGray, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     items(flashcards) { card ->
@@ -756,8 +1034,8 @@ fun MemoryDetailPanel(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 12.dp)
-                                .background(ElevatedSlate, RoundedCornerShape(10.dp))
-                                .border(1.dp, GhostWhite, RoundedCornerShape(10.dp))
+                                .background(ElevatedSlate, RoundedCornerShape(12.dp))
+                                .border(1.dp, GhostWhite, RoundedCornerShape(12.dp))
                                 .padding(12.dp)
                         ) {
                             Column {
@@ -780,13 +1058,13 @@ fun MemoryDetailPanel(
                             onDelete()
                             onDismiss()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0x27FF6B6B)),
-                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0x1FFF4444)),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Default.Delete, contentDescription = null, tint = CoralGlow)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "DELETE FROM SECOND BRAIN", color = CoralGlow, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                        Text(text = "EXCISE FROM ACTIVE KNOWLEDGE", color = CoralGlow, fontWeight = FontWeight.Bold, fontSize = 11.sp)
                     }
                 }
             }
@@ -804,8 +1082,8 @@ fun TimelineScreen(viewModel: MemoryViewModel) {
             .padding(horizontal = 16.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Memory Timeline", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = OffWhite)
-        Text(text = "YOUR SYSTEMATIC KNOWLEDGE JOURNEY", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = SlateGray, letterSpacing = 1.sp)
+        Text(text = "Temporal Continuum", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = OffWhite)
+        Text(text = "YOUR CHRONOLOGICAL INTELLECTUAL EXPLORATION", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = SlateGray, letterSpacing = 1.sp)
         Spacer(modifier = Modifier.height(16.dp))
 
         if (memories.isEmpty()) {
@@ -815,46 +1093,75 @@ fun TimelineScreen(viewModel: MemoryViewModel) {
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(memories) { memo ->
+                    val memoColor = when (memo.sourceType.lowercase()) {
+                        "book" -> DeepIndigo
+                        "url" -> TealGlow
+                        "audio" -> CoralGlow
+                        else -> NebulaViolet
+                    }
+                    
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp)
                     ) {
-                        // Left line timeline connector
+                        // Futuristic timeline tracker path
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.width(28.dp)
+                            modifier = Modifier.width(32.dp)
                         ) {
+                            // Pulsing core dot
                             Box(
                                 modifier = Modifier
-                                    .size(12.dp)
-                                    .background(NebulaViolet, CircleShape)
+                                    .size(14.dp)
+                                    .background(
+                                        brush = Brush.radialGradient(colors = listOf(memoColor, Color.Transparent)),
+                                        shape = CircleShape
+                                    )
+                                    .border(2.dp, memoColor, CircleShape)
                             )
                             Box(
                                 modifier = Modifier
                                     .width(2.dp)
-                                    .height(100.dp)
-                                    .background(GhostWhite)
+                                    .height(110.dp)
+                                    .background(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(memoColor.copy(alpha = 0.5f), Color.Transparent)
+                                        )
+                                    )
                             )
                         }
 
                         Spacer(modifier = Modifier.width(10.dp))
 
-                        // Timeline Box Card
+                        // Timeline box cards
                         Column {
                             val timeStr = remember(memo.timestamp) {
-                                val sdf = SimpleDateFormat("MMM d, yyyy @ h:mm a", Locale.getDefault())
+                                val sdf = SimpleDateFormat("MMMM d, yyyy @ h:mm a", Locale.getDefault())
                                 sdf.format(Date(memo.timestamp))
                             }
-                            Text(text = timeStr, fontSize = 11.sp, color = TealGlow, fontWeight = FontWeight.Bold)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(text = timeStr, fontSize = 11.sp, color = memoColor, fontWeight = FontWeight.Bold)
+                                Box(
+                                    modifier = Modifier
+                                        .background(memoColor.copy(alpha = 0.12f), RoundedCornerShape(4.dp))
+                                        .border(1.dp, memoColor.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(text = memo.sourceType.uppercase(), color = memoColor, fontSize = 7.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
                             Spacer(modifier = Modifier.height(6.dp))
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable { viewModel.selectItem(memo) },
                                 colors = CardDefaults.cardColors(containerColor = DeepSlate),
-                                shape = RoundedCornerShape(12.dp),
-                                border = borderStrokeLight()
+                                shape = RoundedCornerShape(16.dp),
+                                border = borderStrokeLight(memoColor.copy(alpha = 0.25f))
                             ) {
                                 Column(modifier = Modifier.padding(14.dp)) {
                                     Text(text = memo.title, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = OffWhite)
@@ -864,7 +1171,8 @@ fun TimelineScreen(viewModel: MemoryViewModel) {
                                         fontSize = 12.sp,
                                         color = SlateGray,
                                         maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis
+                                        overflow = TextOverflow.Ellipsis,
+                                        lineHeight = 17.sp
                                     )
                                 }
                             }
@@ -876,7 +1184,7 @@ fun TimelineScreen(viewModel: MemoryViewModel) {
     }
 }
 
-// Visual Node State holding drag variables dynamically inside the drawing canvas
+// Draggable orbital node container class
 class GraphNode(val concept: ConceptNode) {
     var x = mutableStateOf(0f)
     var y = mutableStateOf(0f)
@@ -890,24 +1198,21 @@ fun GraphScreen(viewModel: MemoryViewModel) {
     var initialized by remember { mutableStateOf(false) }
     val graphNodes = remember { mutableStateListOf<GraphNode>() }
 
-    // Sync state
+    // Synchronize concept mapping node objects
     LaunchedEffect(concepts) {
         if (concepts.isNotEmpty()) {
-            // Find existings, drop deleted, append new
             val existingIds = graphNodes.map { it.concept.id }.toSet()
             concepts.forEach { node ->
                 if (node.id !in existingIds) {
                     val gNode = GraphNode(node).apply {
-                        // Position circular or random spread around center
                         val angle = Random.nextFloat() * 2f * Math.PI.toFloat()
-                        val radius = 100f + Random.nextFloat() * 150f
-                        x.value = 500f + radius * cos(angle)
-                        y.value = 400f + radius * sin(angle)
+                        val radius = 120f + Random.nextFloat() * 160f
+                        x.value = 540f + radius * cos(angle)
+                        y.value = 460f + radius * sin(angle)
                     }
                     graphNodes.add(gNode)
                 }
             }
-            // Filter out elements that might have been deleted
             val currentNodeIds = concepts.map { it.id }.toSet()
             graphNodes.removeAll { it.concept.id !in currentNodeIds }
             initialized = true
@@ -927,13 +1232,46 @@ fun GraphScreen(viewModel: MemoryViewModel) {
         if (concepts.isEmpty()) {
             EmptyWorkspaceView(onSeed = { viewModel.seedSampleData() })
         } else {
-            Text(
-                text = "Drag physical nodes to organize relationships. Floating connections depict key pathways across your memories.",
-                fontSize = 12.sp,
-                color = SlateGray,
-                lineHeight = 16.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            // Elegant Control dock for interactive physical simulation feel
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(DeepSlate, RoundedCornerShape(14.dp))
+                    .border(1.dp, GhostWhite, RoundedCornerShape(14.dp))
+                    .padding(10.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column {
+                        Text(text = "NETWORK SPEED STATUS", color = TealGlow, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "All 14 Nodes Linked", color = OffWhite, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                    Button(
+                        onClick = {
+                            // Run a dynamic orbital redistribution simulation!
+                            graphNodes.forEach { gNode ->
+                                val angle = Random.nextFloat() * 2f * Math.PI.toFloat()
+                                val radius = 120f + Random.nextFloat() * 160f
+                                gNode.x.value = 540f + radius * cos(angle)
+                                gNode.y.value = 460f + radius * sin(angle)
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = ElevatedSlate),
+                        border = borderStrokeLight(GhostWhite),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = null, tint = NebulaViolet, modifier = Modifier.size(12.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "Optimize Layout", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = OffWhite)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Zoom transform factors
             var scale by remember { mutableStateOf(1f) }
@@ -958,20 +1296,20 @@ fun GraphScreen(viewModel: MemoryViewModel) {
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.graphicsLayer(alpha = 0.25f)
+                        modifier = Modifier.graphicsLayer(alpha = 0.2f)
                     ) {
                         Text(
-                            text = "ACTIVE GRAPH",
+                            text = "SYNA LINK INTERFACE",
                             color = SlateGray,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 3.sp
+                            letterSpacing = 4.sp
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Neural Hub",
+                            text = "Orbital Mindspace",
                             color = Color.White,
-                            fontSize = 24.sp,
+                            fontSize = 26.sp,
                             fontWeight = FontWeight.Light,
                             letterSpacing = 1.sp
                         )
@@ -982,22 +1320,22 @@ fun GraphScreen(viewModel: MemoryViewModel) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val centerPt = Offset(size.width / 2, size.height / 2)
                     
-                    // Sonar Rings
+                    // Sonar Rings represent knowledge spheres
                     drawCircle(
                         color = NebulaViolet.copy(alpha = 0.08f),
-                        radius = 160f,
+                        radius = 180f,
                         center = centerPt,
                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f)
                     )
                     drawCircle(
                         color = NebulaViolet.copy(alpha = 0.04f),
-                        radius = 280f,
+                        radius = 320f,
                         center = centerPt,
                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5f)
                     )
                     drawCircle(
                         color = NebulaViolet.copy(alpha = 0.02f),
-                        radius = 420f,
+                        radius = 480f,
                         center = centerPt,
                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1f)
                     )
@@ -1016,7 +1354,7 @@ fun GraphScreen(viewModel: MemoryViewModel) {
                     }
                 }
 
-                // Interactive physical nodes rendered as draggable Composable bubbles
+                // Draggable interactive physical nodes
                 graphNodes.forEach { gNode ->
                     Box(
                         modifier = Modifier
@@ -1056,7 +1394,7 @@ fun GraphScreen(viewModel: MemoryViewModel) {
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = gNode.concept.category.uppercase(),
+                                  text = gNode.concept.category.uppercase(),
                                 color = SlateGray,
                                 fontSize = 8.sp,
                                 fontWeight = FontWeight.Bold
@@ -1083,11 +1421,31 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
             .padding(horizontal = 16.dp)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Cognitive Memory Chat", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = OffWhite)
-        Text(text = "CONVERSE DIRECTLY WITH YOUR KNOWLEDGE", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = SlateGray, letterSpacing = 1.sp)
+
+        // Cognitive dialog heading status
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column {
+                Text(text = "Brain Companion Chat", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = OffWhite)
+                Text(text = "CONVERSE DIRECTLY WITH CONSTRUCTED KNOWLEDGE", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = SlateGray, letterSpacing = 1.sp)
+            }
+            Box(
+                modifier = Modifier
+                    .background(ElevatedSlate, CircleShape)
+                    .border(1.dp, GhostWhite, CircleShape)
+                    .padding(8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.TipsAndUpdates, contentDescription = null, tint = NebulaViolet, modifier = Modifier.size(16.dp))
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // History message log
+        // History logs
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -1095,52 +1453,128 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
             reverseLayout = true,
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Reverse order logic to simplify lazy column layouts
             items(messages.reversed()) { msg ->
                 val isUser = msg.second
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f)
-                            .background(
-                                color = if (isUser) DeepIndigo else DeepSlate,
-                                shape = RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    topEnd = 16.dp,
-                                    bottomStart = if (isUser) 16.dp else 4.dp,
-                                    bottomEnd = if (isUser) 4.dp else 16.dp
+                    if (isUser) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.88f)
+                                .background(
+                                    brush = Brush.horizontalGradient(listOf(NebulaViolet.copy(alpha = 0.85f), DeepIndigo.copy(alpha = 0.85f))),
+                                    shape = RoundedCornerShape(
+                                        topStart = 16.dp,
+                                        topEnd = 16.dp,
+                                        bottomStart = 16.dp,
+                                        bottomEnd = 4.dp
+                                    )
                                 )
-                            )
-                            .border(
-                                1.dp,
-                                if (isUser) NebulaViolet.copy(alpha = 0.5f) else GhostWhite,
-                                shape = RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    topEnd = 16.dp,
-                                    bottomStart = if (isUser) 16.dp else 4.dp,
-                                    bottomEnd = if (isUser) 4.dp else 16.dp
+                                .border(
+                                    1.dp,
+                                    NebulaViolet,
+                                    shape = RoundedCornerShape(
+                                        topStart = 16.dp,
+                                        topEnd = 16.dp,
+                                        bottomStart = 16.dp,
+                                        bottomEnd = 4.dp
+                                    )
                                 )
-                            )
-                            .padding(14.dp)
-                    ) {
-                        Column {
-                            Text(
-                                text = if (isUser) "YOU" else "COGNITIVE ASSISTANT",
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isUser) TealGlow else NebulaViolet,
-                                letterSpacing = 1.sp
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = msg.first,
-                                color = OffWhite,
-                                fontSize = 13.sp,
-                                lineHeight = 18.sp
-                            )
+                                .padding(14.dp)
+                        ) {
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "YOU // SENSOR INTEGRATION",
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = OffWhite,
+                                        letterSpacing = 1.sp
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.Face,
+                                        contentDescription = null,
+                                        tint = OffWhite,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = msg.first,
+                                    color = OffWhite,
+                                    fontSize = 13.sp,
+                                    lineHeight = 18.sp
+                                )
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.88f)
+                                .background(
+                                    color = DeepSlate,
+                                    shape = RoundedCornerShape(
+                                        topStart = 16.dp,
+                                        topEnd = 16.dp,
+                                        bottomStart = 4.dp,
+                                        bottomEnd = 16.dp
+                                    )
+                                )
+                                .border(
+                                    1.dp,
+                                    TealGlow.copy(alpha = 0.25f),
+                                    shape = RoundedCornerShape(
+                                        topStart = 16.dp,
+                                        topEnd = 16.dp,
+                                        bottomStart = 4.dp,
+                                        bottomEnd = 16.dp
+                                    )
+                                )
+                                .padding(14.dp)
+                        ) {
+                            Row {
+                                Box(
+                                    modifier = Modifier
+                                        .width(3.dp)
+                                        .height(36.dp)
+                                        .background(TealGlow, RoundedCornerShape(1.5.dp))
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "COGNITIVE COMPANION // GENERAL INTELLIGENCE",
+                                            fontSize = 8.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = NebulaViolet,
+                                            letterSpacing = 1.sp
+                                        )
+                                        Icon(
+                                            imageVector = Icons.Default.AutoAwesome,
+                                            contentDescription = null,
+                                            tint = NebulaViolet,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = msg.first,
+                                        color = OffWhite,
+                                        fontSize = 13.sp,
+                                        lineHeight = 18.sp
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -1151,20 +1585,26 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 12.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    CircularProgressIndicator(modifier = Modifier.size(14.dp), color = NebulaViolet, strokeWidth = 2.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .background(ElevatedSlate, RoundedCornerShape(12.dp))
+                        .border(1.dp, GhostWhite, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(12.dp), color = NebulaViolet, strokeWidth = 2.dp)
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = "Brain searching memories & reasoning...", color = SlateGray, fontSize = 11.sp)
+                    Text(text = "Rerouting synapses & scanning memories...", color = SlateGray, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Input send block
+        // Input sent box
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1174,7 +1614,7 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
             OutlinedTextField(
                 value = chatInput,
                 onValueChange = { viewModel.chatInput.value = it },
-                placeholder = { Text("Ask summaries, quizzes or studies...", color = SlateGray, fontSize = 13.sp) },
+                placeholder = { Text("Ask summaries, flashcard review or studies...", color = SlateGray, fontSize = 13.sp) },
                 modifier = Modifier
                     .weight(1f)
                     .testTag("chat_input_text"),
@@ -1186,7 +1626,7 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
                     focusedContainerColor = DeepSlate,
                     unfocusedContainerColor = DeepSlate
                 ),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(16.dp),
                 singleLine = true
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -1206,7 +1646,7 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Send,
-                    contentDescription = "Send Query",
+                    contentDescription = "Send Synaptic Query",
                     tint = if (chatInput.isNotBlank() && !isThinking) Color.Black else SlateGray,
                     modifier = Modifier.size(18.dp)
                 )
@@ -1233,30 +1673,31 @@ fun MemoryBottomBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(DeepSlate.copy(alpha = 0.92f), RoundedCornerShape(32.dp))
+                .background(DeepSlate.copy(alpha = 0.94f), RoundedCornerShape(32.dp))
                 .border(1.dp, GhostWhite, RoundedCornerShape(32.dp))
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Tab 1: Brain Stream / Map
+            // Tab 1: Map
             val tab1Selected = activeTab == "dashboard"
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
+                    .clip(CircleShape)
                     .clickable { onTabSelected("dashboard") }
                     .padding(vertical = 8.dp)
             ) {
                 Icon(
                     imageVector = if (tab1Selected) Icons.Filled.Dashboard else Icons.Outlined.Dashboard,
-                    contentDescription = null,
+                    contentDescription = "Dashboard Screen",
                     tint = if (tab1Selected) NebulaViolet else SlateGray,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Map",
+                    text = "Palace Map",
                     color = if (tab1Selected) NebulaViolet else SlateGray,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
@@ -1269,12 +1710,13 @@ fun MemoryBottomBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
+                    .clip(CircleShape)
                     .clickable { onTabSelected("timeline") }
                     .padding(vertical = 8.dp)
             ) {
                 Icon(
                     imageVector = if (tab2Selected) Icons.Filled.History else Icons.Outlined.History,
-                    contentDescription = null,
+                    contentDescription = "Timeline Screen",
                     tint = if (tab2Selected) NebulaViolet else SlateGray,
                     modifier = Modifier.size(20.dp)
                 )
@@ -1287,7 +1729,7 @@ fun MemoryBottomBar(
                 )
             }
 
-            // Central Ingestion Trigger
+            // Central Brain Ingestion Floating Trigger
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -1295,14 +1737,15 @@ fun MemoryBottomBar(
                         Brush.verticalGradient(listOf(NebulaViolet, DeepIndigo)),
                         CircleShape
                     )
+                    .clip(CircleShape)
                     .clickable { onAddClicked() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Ingest Entry",
+                    contentDescription = "Ingest Knowledge Insight",
                     tint = Color.White,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
 
@@ -1312,18 +1755,19 @@ fun MemoryBottomBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
+                    .clip(CircleShape)
                     .clickable { onTabSelected("graph") }
                     .padding(vertical = 8.dp)
             ) {
                 Icon(
                     imageVector = if (tab3Selected) Icons.Filled.BubbleChart else Icons.Outlined.BubbleChart,
-                    contentDescription = null,
+                    contentDescription = "Mind Graph",
                     tint = if (tab3Selected) NebulaViolet else SlateGray,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Vault",
+                    text = "Neural Web",
                     color = if (tab3Selected) NebulaViolet else SlateGray,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
@@ -1336,18 +1780,19 @@ fun MemoryBottomBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(1f)
+                    .clip(CircleShape)
                     .clickable { onTabSelected("chat") }
                     .padding(vertical = 8.dp)
             ) {
                 Icon(
                     imageVector = if (tab4Selected) Icons.Filled.Psychology else Icons.Outlined.Psychology,
-                    contentDescription = null,
+                    contentDescription = "AI Assistant Chat",
                     tint = if (tab4Selected) NebulaViolet else SlateGray,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "AI Chat",
+                    text = "Brain Chat",
                     color = if (tab4Selected) NebulaViolet else SlateGray,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
@@ -1360,7 +1805,7 @@ fun MemoryBottomBar(
 // Helper boundary stroke decoration
 fun borderStrokeLight(color: Color = GhostWhite) = androidx.compose.foundation.BorderStroke(1.dp, color)
 
-// Moshi parser client helper functions
+// Moshi parser client helper functions for DB data parsing
 fun parseJsonStringList(json: String): List<String> {
     return try {
         val cleaned = json.trim()
@@ -1380,7 +1825,6 @@ fun parseJsonFlashcardList(json: String): List<GeminiFlashcard> {
     try {
         val cleaned = json.trim()
         if (cleaned.startsWith("[") && cleaned.endsWith("]")) {
-            // Find object blocks manually to guarantee safety across minor model glitches
             val blocks = cleaned.substring(1, cleaned.length - 1).split("},")
             blocks.forEach { block ->
                 val qIdx = block.indexOf("\"question\"")

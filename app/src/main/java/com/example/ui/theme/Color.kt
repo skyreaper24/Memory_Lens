@@ -2,16 +2,17 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Cosmic Luxury Immersive UI Dark Palette
-val CosmicVoid = Color(0xFF08080A)     // Screen background void
-val DeepSlate = Color(0xFF16161A)      // Surface cards background
-val ElevatedSlate = Color(0xFF1C1C22)  // Interactive elevated container background
+// Cyberpunk Luxury Immersive Spectrogram Dark Palette
+val CosmicVoid = Color(0xFF06050C)     // Pure space void background (Obsidian Black-Purple)
+val DeepSlate = Color(0xFF140F24)      // Velvet night surface card backing
+val ElevatedSlate = Color(0xFF221A3C)  // Rich interactive elevated state surface
 
-val NebulaViolet = Color(0xFF6366F1)   // Glowing Indigo-500
-val DeepIndigo = Color(0xFF4F46E5)     // Indigo-600 secondary interactive accents
-val TealGlow = Color(0xFF10B981)       // Success/Audio Emerald-500
-val CoralGlow = Color(0xFFEF4444)      // Action/Youtube Red-500
+val NebulaViolet = Color(0xFFD946EF)   // Glowing Pinkish Violet - Fuschia 500
+val DeepIndigo = Color(0xFFF43F5E)     // Cyber Laser Rose - Rose 500 secondary accents
+val TealGlow = Color(0xFF14B8A6)       // Electric Mint Teal - Teal 500
+val CoralGlow = Color(0xFFFBBF24)      // Vibrant Solar Amber Yellow - Amber 400
 
-val SlateGray = Color(0xFF64748B)      // Slate-500 subheadings/descriptions
-val OffWhite = Color(0xFFE2E8F0)       // Slate-200 main text
-val GhostWhite = Color(0x0FFFFFFF)     // 5% Transparent border/outline (border-white/5)
+val SlateGray = Color(0xFF94A3B8)      // Clear Slate Gray - Slate 400 Descriptions
+val OffWhite = Color(0xFFF8FAFC)       // Polar High Contrast Text - Slate 50
+val GhostWhite = Color(0x2BD946EF)     // 17% Holographic violet borders/guides
+

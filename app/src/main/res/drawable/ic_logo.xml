@@ -1,0 +1,145 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outlined Brain Speech Bubble Outline with custom gradient -->
+    <path
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M 46,32 C 32,32 25,43 25,56 C 25,67 33,73 42,73 L 38,81 L 47,75 C 60,75 73,68 73,54 C 73,49 71,44 68,41">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="linear"
+                android:startX="25"
+                android:startY="32"
+                android:endX="73"
+                android:endY="75">
+                <item android:offset="0.0" android:color="#FF38BDF8" />
+                <item android:offset="0.5" android:color="#FF6366F1" />
+                <item android:offset="1.0" android:color="#FFEC4899" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Camera Lens Shutter Blades (Spiral Aperture Center: (60, 43), Outer Radius: 10, Inner Gap Radius: 3.5) -->
+    
+    <!-- Blade 1 -->
+    <path
+        android:strokeWidth="0.8"
+        android:strokeColor="#08080A"
+        android:strokeLineJoin="round"
+        android:pathData="M 70,37.25 L 70,48.75 L 64,45.3 L 64,40.7 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="35"
+                android:endX="70"
+                android:endY="50">
+                <item android:offset="0.0" android:color="#FF38BDF8" />
+                <item android:offset="1.0" android:color="#FF6366F1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Blade 2 -->
+    <path
+        android:strokeWidth="0.8"
+        android:strokeColor="#08080A"
+        android:strokeLineJoin="round"
+        android:pathData="M 70,48.75 L 60,54.5 L 60,47.5 L 64,45.3 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="35"
+                android:endX="70"
+                android:endY="50">
+                <item android:offset="0.0" android:color="#FF4F46E5" />
+                <item android:offset="1.0" android:color="#FF818CF8" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Blade 3 -->
+    <path
+        android:strokeWidth="0.8"
+        android:strokeColor="#08080A"
+        android:strokeLineJoin="round"
+        android:pathData="M 60,54.5 L 50,48.75 L 56,45.3 L 60,47.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="35"
+                android:endX="70"
+                android:endY="50">
+                <item android:offset="0.0" android:color="#FF6366F1" />
+                <item android:offset="1.0" android:color="#FFEC4899" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Blade 4 -->
+    <path
+        android:strokeWidth="0.8"
+        android:strokeColor="#08080A"
+        android:strokeLineJoin="round"
+        android:pathData="M 50,48.75 L 50,37.25 L 56,40.7 L 56,45.3 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="35"
+                android:endX="70"
+                android:endY="50">
+                <item android:offset="0.0" android:color="#FFEC4899" />
+                <item android:offset="1.0" android:color="#FFC084FC" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Blade 5 -->
+    <path
+        android:strokeWidth="0.8"
+        android:strokeColor="#08080A"
+        android:strokeLineJoin="round"
+        android:pathData="M 50,37.25 L 60,31.5 L 60,38.5 L 56,40.7 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="35"
+                android:endX="70"
+                android:endY="50">
+                <item android:offset="0.0" android:color="#FFC084FC" />
+                <item android:offset="1.0" android:color="#FF38BDF8" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Blade 6 -->
+    <path
+        android:strokeWidth="0.8"
+        android:strokeColor="#08080A"
+        android:strokeLineJoin="round"
+        android:pathData="M 60,31.5 L 70,37.25 L 64,40.7 L 60,38.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="50"
+                android:startY="31"
+                android:endX="70"
+                android:endY="45">
+                <item android:offset="0.0" android:color="#FF38BDF8" />
+                <item android:offset="1.0" android:color="#FFC084FC" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+</vector>
