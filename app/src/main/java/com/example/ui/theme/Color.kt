@@ -3,16 +3,23 @@ package com.example.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Cyberpunk Luxury Immersive Spectrogram Dark Palette
-val CosmicVoid = Color(0xFF06050C)     // Pure space void background (Obsidian Black-Purple)
-val DeepSlate = Color(0xFF140F24)      // Velvet night surface card backing
-val ElevatedSlate = Color(0xFF221A3C)  // Rich interactive elevated state surface
+val CosmicVoid = Color(0xFF0D0B18)     // Deep velvet high-end obsidian space void
+val DeepSlate = Color(0xFF18152B)      // Luxurious rich space-indigo surface card backing
+val ElevatedSlate = Color(0xFF252142)  // Contrast state interactive surface
 
-val NebulaViolet = Color(0xFFD946EF)   // Glowing Pinkish Violet - Fuschia 500
-val DeepIndigo = Color(0xFFF43F5E)     // Cyber Laser Rose - Rose 500 secondary accents
-val TealGlow = Color(0xFF14B8A6)       // Electric Mint Teal - Teal 500
-val CoralGlow = Color(0xFFFBBF24)      // Vibrant Solar Amber Yellow - Amber 400
+val NebulaViolet = Color(0xFFD946EF)   // Glowing Cosmic Violet - Fuchsia Pink
+val DeepIndigo = Color(0xFF7C3AED)     // Electric Indigo
+val TealGlow = Color(0xFF10B981)       // Vivid Emerald Green
+val CoralGlow = Color(0xFFEF4444)      // Radiating Laser Red
 
-val SlateGray = Color(0xFF94A3B8)      // Clear Slate Gray - Slate 400 Descriptions
-val OffWhite = Color(0xFFF8FAFC)       // Polar High Contrast Text - Slate 50
-val GhostWhite = Color(0x2BD946EF)     // 17% Holographic violet borders/guides
+// New Spectacular Multi-Color Cyber Spectrum:
+val CyberYellow = Color(0xFFFFEA00)    // High-visibility electric neon yellow
+val LaserRed = Color(0xFFFF2E63)       // High-visibility glowing pink-red
+val CyberCyan = Color(0xFF00F5FF)      // Ultra-glowing cyan blue
+val NeonOrange = Color(0xFFFF6B00)     // Energetic neon orange
+
+val SlateGray = Color(0xFF94A3B8)      // Sleek Slate Gray for metadata & descriptions
+val OffWhite = Color(0xFFFAFAFA)       // Crisp white text
+val GhostWhite = Color(0x38D946EF)     // Holographic violet borders/glows
+
 

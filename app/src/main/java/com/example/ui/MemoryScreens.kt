@@ -2,6 +2,7 @@ package com.example.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -451,7 +453,11 @@ fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
                 ),
                 shape = RoundedCornerShape(24.dp)
             )
-            .border(1.dp, GhostWhite, RoundedCornerShape(24.dp))
+            .border(
+                1.dp,
+                Brush.horizontalGradient(listOf(CyberCyan, NebulaViolet, CyberYellow)),
+                RoundedCornerShape(24.dp)
+            )
             .padding(16.dp)
     ) {
         Row(
@@ -461,8 +467,8 @@ fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
         ) {
             Column(modifier = Modifier.weight(1.3f)) {
                 Text(
-                    text = "MIND INTEGRITY & AURA",
-                    color = NebulaViolet,
+                    text = "MIND INTEGRITY & SYNA-AURA",
+                    color = CyberCyan,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.2.sp
@@ -470,7 +476,7 @@ fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "Cosmic Mindspace",
-                    fontSize = 18.sp,
+                    fontSize = 19.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = OffWhite
                 )
@@ -481,19 +487,19 @@ fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .background(CoralGlow.copy(alpha = 0.12f), RoundedCornerShape(6.dp))
-                            .border(1.dp, CoralGlow.copy(alpha = 0.2f), RoundedCornerShape(6.dp))
+                            .background(CyberYellow.copy(alpha = 0.12f), RoundedCornerShape(6.dp))
+                            .border(1.dp, CyberYellow.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        Text(text = "7 Days Streak", color = CoralGlow, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "7 Days Streak", color = CyberYellow, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     }
                     Box(
                         modifier = Modifier
-                            .background(DeepIndigo.copy(alpha = 0.15f), RoundedCornerShape(6.dp))
-                            .border(1.dp, DeepIndigo.copy(alpha = 0.25f), RoundedCornerShape(6.dp))
+                            .background(LaserRed.copy(alpha = 0.12f), RoundedCornerShape(6.dp))
+                            .border(1.dp, LaserRed.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        Text(text = "Compounding Focus", color = DeepIndigo, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "Compounding Focus", color = LaserRed, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -501,16 +507,16 @@ fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
             // Radial progress sphere represents learning density
             Box(
                 modifier = Modifier
-                    .size(68.dp)
+                    .size(72.dp)
                     .background(
                         brush = Brush.radialGradient(
-                            colors = listOf(NebulaViolet.copy(alpha = 0.15f), Color.Transparent)
+                            colors = listOf(CyberCyan.copy(alpha = 0.15f), Color.Transparent)
                         ),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Canvas(modifier = Modifier.size(56.dp)) {
+                Canvas(modifier = Modifier.size(58.dp)) {
                     val centerPt = Offset(size.width / 2, size.height / 2)
                     drawCircle(
                         color = GhostWhite,
@@ -519,16 +525,18 @@ fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = 4f)
                     )
                     drawArc(
-                        color = NebulaViolet,
+                        brush = Brush.sweepGradient(
+                            colors = listOf(CyberCyan, NebulaViolet, LaserRed, CyberCyan)
+                        ),
                         startAngle = -90f,
-                        sweepAngle = 280f, // representing 78% depth score
+                        sweepAngle = 290f, // representing 80% depth score
                         useCenter = false,
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 6f)
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 6f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
                     )
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = "94%", color = OffWhite, fontSize = 14.sp, fontWeight = FontWeight.ExtraBold)
-                    Text(text = "DEP", color = SlateGray, fontSize = 7.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "DEP", color = CyberCyan, fontSize = 7.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -543,15 +551,15 @@ fun MindPalaceAuraWidget(memoriesCount: Int, nodesCount: Int) {
         ) {
             Column {
                 Text(text = "SAVED MEMORIES", fontSize = 8.sp, color = SlateGray, fontWeight = FontWeight.Bold)
-                Text(text = "$memoriesCount Nodes", fontSize = 14.sp, color = NebulaViolet, fontWeight = FontWeight.ExtraBold)
+                Text(text = "$memoriesCount Nodes", fontSize = 14.sp, color = CyberCyan, fontWeight = FontWeight.ExtraBold)
             }
             Column {
                 Text(text = "CONCEPT MATRIX", fontSize = 8.sp, color = SlateGray, fontWeight = FontWeight.Bold)
-                Text(text = "$nodesCount Links", fontSize = 14.sp, color = TealGlow, fontWeight = FontWeight.ExtraBold)
+                Text(text = "$nodesCount Links", fontSize = 14.sp, color = CyberYellow, fontWeight = FontWeight.ExtraBold)
             }
             Column {
                 Text(text = "COGNITIVE SPEED", fontSize = 8.sp, color = SlateGray, fontWeight = FontWeight.Bold)
-                Text(text = "37x Speed", fontSize = 14.sp, color = CoralGlow, fontWeight = FontWeight.ExtraBold)
+                Text(text = "37x Speed", fontSize = 14.sp, color = LaserRed, fontWeight = FontWeight.ExtraBold)
             }
         }
     }
@@ -580,7 +588,7 @@ fun ApertureRefractiveInsightPanel(memories: List<MemoryItem>) {
             )
             .border(
                 1.dp, 
-                Brush.horizontalGradient(listOf(NebulaViolet, CoralGlow, TealGlow)), 
+                Brush.horizontalGradient(listOf(LaserRed, CyberYellow, CyberCyan)), 
                 RoundedCornerShape(20.dp)
             )
             .padding(14.dp)
@@ -590,11 +598,11 @@ fun ApertureRefractiveInsightPanel(memories: List<MemoryItem>) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = CoralGlow, modifier = Modifier.size(14.dp))
+                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = CyberYellow, modifier = Modifier.size(14.dp))
                 Text(
                     text = "DAILY RECONSTRUCTIVE INSIGHT",
                     fontSize = 8.sp,
-                    color = CoralGlow,
+                    color = CyberYellow,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.2.sp
                 )
@@ -615,9 +623,10 @@ fun ApertureRefractiveInsightPanel(memories: List<MemoryItem>) {
 fun MemoryItemRowCard(item: MemoryItem, onClick: () -> Unit) {
     val sourceColor = remember(item.sourceType) {
         when (item.sourceType.lowercase()) {
-            "book" -> DeepIndigo
-            "url" -> TealGlow
-            "audio" -> CoralGlow
+            "book" -> CyberYellow
+            "url" -> CyberCyan
+            "audio" -> NeonOrange
+            "note" -> LaserRed
             else -> NebulaViolet
         }
     }
@@ -1094,9 +1103,10 @@ fun TimelineScreen(viewModel: MemoryViewModel) {
             ) {
                 items(memories) { memo ->
                     val memoColor = when (memo.sourceType.lowercase()) {
-                        "book" -> DeepIndigo
-                        "url" -> TealGlow
-                        "audio" -> CoralGlow
+                        "book" -> CyberYellow
+                        "url" -> CyberCyan
+                        "audio" -> NeonOrange
+                        "note" -> LaserRed
                         else -> NebulaViolet
                     }
                     
@@ -1205,10 +1215,8 @@ fun GraphScreen(viewModel: MemoryViewModel) {
             concepts.forEach { node ->
                 if (node.id !in existingIds) {
                     val gNode = GraphNode(node).apply {
-                        val angle = Random.nextFloat() * 2f * Math.PI.toFloat()
-                        val radius = 120f + Random.nextFloat() * 160f
-                        x.value = 540f + radius * cos(angle)
-                        y.value = 460f + radius * sin(angle)
+                        x.value = 0f
+                        y.value = 0f
                     }
                     graphNodes.add(gNode)
                 }
@@ -1232,13 +1240,20 @@ fun GraphScreen(viewModel: MemoryViewModel) {
         if (concepts.isEmpty()) {
             EmptyWorkspaceView(onSeed = { viewModel.seedSampleData() })
         } else {
-            // Elegant Control dock for interactive physical simulation feel
+            // Spectacular Interactive Controls
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(DeepSlate, RoundedCornerShape(14.dp))
-                    .border(1.dp, GhostWhite, RoundedCornerShape(14.dp))
-                    .padding(10.dp)
+                    .background(
+                        brush = Brush.linearGradient(colors = listOf(DeepSlate, ElevatedSlate)),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .border(
+                        1.dp,
+                        Brush.horizontalGradient(listOf(LaserRed, CyberYellow, CyberCyan)),
+                        RoundedCornerShape(16.dp)
+                    )
+                    .padding(12.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -1246,159 +1261,224 @@ fun GraphScreen(viewModel: MemoryViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column {
-                        Text(text = "NETWORK SPEED STATUS", color = TealGlow, fontSize = 8.sp, fontWeight = FontWeight.Bold)
-                        Text(text = "All 14 Nodes Linked", color = OffWhite, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(8.dp).background(CyberCyan, CircleShape))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "NEURAL LINK INTEGRATION", color = CyberCyan, fontSize = 8.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                        }
+                        Text(text = "All ${concepts.size} Synapses Active", color = OffWhite, fontSize = 12.sp, fontWeight = FontWeight.ExtraBold)
                     }
+                    
                     Button(
                         onClick = {
-                            // Run a dynamic orbital redistribution simulation!
-                            graphNodes.forEach { gNode ->
+                            // Instant high fidelity random spring redistribution
+                            graphNodes.forEachIndexed { index, gNode ->
                                 val angle = Random.nextFloat() * 2f * Math.PI.toFloat()
-                                val radius = 120f + Random.nextFloat() * 160f
-                                gNode.x.value = 540f + radius * cos(angle)
-                                gNode.y.value = 460f + radius * sin(angle)
+                                val radius = 120f + Random.nextFloat() * 120f
+                                gNode.x.value = 400f + radius * cos(angle)
+                                gNode.y.value = 400f + radius * sin(angle)
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = ElevatedSlate),
-                        border = borderStrokeLight(GhostWhite),
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = CosmicVoid),
+                        border = BorderStroke(1.dp, GhostWhite),
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-                        Icon(Icons.Default.Refresh, contentDescription = null, tint = NebulaViolet, modifier = Modifier.size(12.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = "Optimize Layout", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = OffWhite)
+                        Icon(Icons.Default.Refresh, contentDescription = null, tint = CyberYellow, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(text = "Optimize Layout", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = OffWhite)
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Zoom transform factors
             var scale by remember { mutableStateOf(1f) }
             val transformState = rememberTransformableState { zoomChange, _, _ ->
-                scale = (scale * zoomChange).coerceIn(0.5f, 2.5f)
+                scale = (scale * zoomChange).coerceIn(0.6f, 2.0f)
             }
 
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .background(CosmicVoid, RoundedCornerShape(24.dp))
-                    .border(1.dp, GhostWhite, RoundedCornerShape(24.dp))
-                    .graphicsLayer(scaleX = scale, scaleY = scale)
-                    .transformable(state = transformState)
+                    .border(
+                        BorderStroke(
+                            1.dp,
+                            Brush.linearGradient(colors = listOf(NebulaViolet.copy(alpha = 0.5f), CyberCyan.copy(alpha = 0.2f)))
+                        ),
+                        RoundedCornerShape(24.dp)
+                    )
                     .clipToBounds()
             ) {
-                // Immersive backdrop watermark center focus
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.graphicsLayer(alpha = 0.2f)
-                    ) {
-                        Text(
-                            text = "SYNA LINK INTERFACE",
-                            color = SlateGray,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 4.sp
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Orbital Mindspace",
-                            color = Color.White,
-                            fontSize = 26.sp,
-                            fontWeight = FontWeight.Light,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
+                val widthPx = with(LocalDensity.current) { maxWidth.toPx() }
+                val heightPx = with(LocalDensity.current) { maxHeight.toPx() }
 
-                // Drag links + concentric sonar scanning circles drawn behind
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val centerPt = Offset(size.width / 2, size.height / 2)
-                    
-                    // Sonar Rings represent knowledge spheres
-                    drawCircle(
-                        color = NebulaViolet.copy(alpha = 0.08f),
-                        radius = 180f,
-                        center = centerPt,
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f)
-                    )
-                    drawCircle(
-                        color = NebulaViolet.copy(alpha = 0.04f),
-                        radius = 320f,
-                        center = centerPt,
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5f)
-                    )
-                    drawCircle(
-                        color = NebulaViolet.copy(alpha = 0.02f),
-                        radius = 480f,
-                        center = centerPt,
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1f)
-                    )
+                val centerXPx = if (widthPx > 0) widthPx / 2f else 500f
+                val centerYPx = if (heightPx > 0) heightPx / 2f else 450f
 
-                    connections.forEach { conn ->
-                        val srcNode = graphNodes.firstOrNull { it.concept.id == conn.sourceId }
-                        val trgNode = graphNodes.firstOrNull { it.concept.id == conn.targetId }
-                        if (srcNode != null && trgNode != null) {
-                            drawLine(
-                                color = NebulaViolet.copy(alpha = 0.4f),
-                                start = Offset(srcNode.x.value, srcNode.y.value),
-                                end = Offset(trgNode.x.value, trgNode.y.value),
-                                strokeWidth = 3f
-                            )
+                // Re-center and circular disperse nodes when scale/bounds load or concepts change
+                LaunchedEffect(widthPx, heightPx, graphNodes.size) {
+                    if (widthPx > 0 && heightPx > 0) {
+                        graphNodes.forEachIndexed { index, gNode ->
+                            if (gNode.x.value == 0f || gNode.x.value == 540f) {
+                                val angle = (index.toFloat() / maxOf(1, graphNodes.size)) * 2.0 * Math.PI
+                                val radius = (minOf(widthPx, heightPx) * 0.28f).coerceAtLeast(110f) + (index % 3) * 15f
+                                gNode.x.value = centerXPx + (radius * cos(angle)).toFloat()
+                                gNode.y.value = centerYPx + (radius * sin(angle)).toFloat()
+                            }
                         }
                     }
                 }
 
-                // Draggable interactive physical nodes
-                graphNodes.forEach { gNode ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(scaleX = scale, scaleY = scale)
+                        .transformable(state = transformState)
+                ) {
+                    // Immersive backdrop pattern
                     Box(
-                        modifier = Modifier
-                            .offset { IntOffset(gNode.x.value.toInt() - 65, gNode.y.value.toInt() - 30) }
-                            .pointerInput(gNode) {
-                                detectDragGestures { change, dragAmount ->
-                                    change.consume()
-                                    gNode.x.value += dragAmount.x
-                                    gNode.y.value += dragAmount.y
-                                }
-                            }
-                            .background(
-                                color = DeepSlate,
-                                shape = RoundedCornerShape(14.dp)
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = when (gNode.concept.category) {
-                                    "book" -> TealGlow
-                                    "person" -> CoralGlow
-                                    "tool" -> DeepIndigo
-                                    else -> NebulaViolet
-                                },
-                                shape = RoundedCornerShape(14.dp)
-                            )
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.graphicsLayer(alpha = 0.15f)
+                        ) {
                             Text(
-                                text = gNode.concept.name,
-                                color = OffWhite,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                  text = gNode.concept.category.uppercase(),
+                                text = "COGNITIVE GRAPH INTERFACE",
                                 color = SlateGray,
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Bold
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 3.sp
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "N-Dimensional Mind",
+                                color = OffWhite,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Light,
+                                letterSpacing = 1.sp
+                            )
+                        }
+                    }
+
+                    // Background grid and link paths
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val boundsCenter = Offset(size.width / 2f, size.height / 2f)
+
+                        // Outer sonar rings
+                        drawCircle(
+                            color = CyberCyan.copy(alpha = 0.05f),
+                            radius = minOf(size.width, size.height) * 0.18f,
+                            center = boundsCenter,
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5f)
+                        )
+                        drawCircle(
+                            color = LaserRed.copy(alpha = 0.04f),
+                            radius = minOf(size.width, size.height) * 0.32f,
+                            center = boundsCenter,
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1f)
+                        )
+                        drawCircle(
+                            color = CyberYellow.copy(alpha = 0.02f),
+                            radius = minOf(size.width, size.height) * 0.45f,
+                            center = boundsCenter,
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1f)
+                        )
+
+                        // Draw Connections with glowing multitone arcs/lines
+                        connections.forEach { conn ->
+                            val srcNode = graphNodes.firstOrNull { it.concept.id == conn.sourceId }
+                            val trgNode = graphNodes.firstOrNull { it.concept.id == conn.targetId }
+                            if (srcNode != null && trgNode != null && srcNode.x.value > 0 && trgNode.x.value > 0) {
+                                drawLine(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(CyberCyan.copy(alpha = 0.6f), LaserRed.copy(alpha = 0.6f))
+                                    ),
+                                    start = Offset(srcNode.x.value, srcNode.y.value),
+                                    end = Offset(trgNode.x.value, trgNode.y.value),
+                                    strokeWidth = 4f
+                                )
+                            }
+                        }
+                    }
+
+                    // Cybernetic Multi-Colored Conceptual Nodes
+                    graphNodes.forEach { gNode ->
+                        val nodeColor = remember(gNode.concept.category) {
+                            when (gNode.concept.category.lowercase()) {
+                                "book" -> CyberYellow
+                                "person", "author" -> LaserRed
+                                "tool", "site" -> CyberCyan
+                                "url" -> TealGlow
+                                "audio", "voice" -> NeonOrange
+                                "note" -> NebulaViolet
+                                else -> NebulaViolet
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .offset {
+                                    IntOffset(
+                                        (gNode.x.value - 60f).toInt(),
+                                        (gNode.y.value - 26f).toInt()
+                                    )
+                                }
+                                .pointerInput(gNode) {
+                                    detectDragGestures { change, dragAmount ->
+                                        change.consume()
+                                        // Position boundary clamping to NEVER bleed off-screen or overflow container
+                                        val nextX = (gNode.x.value + dragAmount.x).coerceIn(80f, widthPx - 80f)
+                                        val nextY = (gNode.y.value + dragAmount.y).coerceIn(40f, heightPx - 40f)
+                                        gNode.x.value = nextX
+                                        gNode.y.value = nextY
+                                    }
+                                }
+                                .background(
+                                    color = DeepSlate.copy(alpha = 0.92f),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .border(
+                                    width = 1.5.dp,
+                                    color = nodeColor,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(horizontal = 14.dp, vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = gNode.concept.name,
+                                    color = OffWhite,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(5.dp)
+                                            .background(nodeColor, CircleShape)
+                                    )
+                                    Text(
+                                        text = gNode.concept.category.uppercase(),
+                                        color = nodeColor,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 0.5.sp
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -1528,7 +1608,7 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
                                 )
                                 .border(
                                     1.dp,
-                                    TealGlow.copy(alpha = 0.25f),
+                                    CyberCyan.copy(alpha = 0.35f),
                                     shape = RoundedCornerShape(
                                         topStart = 16.dp,
                                         topEnd = 16.dp,
@@ -1543,7 +1623,7 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
                                     modifier = Modifier
                                         .width(3.dp)
                                         .height(36.dp)
-                                        .background(TealGlow, RoundedCornerShape(1.5.dp))
+                                        .background(CyberCyan, RoundedCornerShape(1.5.dp))
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Column(modifier = Modifier.weight(1f)) {
@@ -1556,13 +1636,13 @@ fun CognitiveChatScreen(viewModel: MemoryViewModel) {
                                             text = "COGNITIVE COMPANION // GENERAL INTELLIGENCE",
                                             fontSize = 8.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = NebulaViolet,
+                                            color = CyberCyan,
                                             letterSpacing = 1.sp
                                         )
                                         Icon(
                                             imageVector = Icons.Default.AutoAwesome,
                                             contentDescription = null,
-                                            tint = NebulaViolet,
+                                            tint = CyberYellow,
                                             modifier = Modifier.size(12.dp)
                                         )
                                     }
